@@ -1,0 +1,27 @@
+---
+import PostCard from './PostCard.astro';
+import { ArrowRight } from 'lucide-react';
+
+const { title, posts, cardLabel, slug } = Astro.props;
+if (!posts || posts.length === 0) return null;
+---
+
+<section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="flex items-center justify-between mb-10 border-b border-gray-100 pb-4">
+    <div class="flex items-center gap-4">
+      <div class="w-2 h-10 bg-[#ef4444] rounded-sm shadow-[0_0_15px_rgba(239,68,68,0.5)]"></div>
+      <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight font-['Inter']">{title}</h2>
+    </div>
+    <a href={`/category/${slug}`} class="group hidden sm:flex items-center gap-2 text-[#4F46E5] font-bold text-sm hover:text-[#4338ca] transition-colors tracking-wide uppercase">
+      View all stories 
+      <div class="bg-[#4F46E5]/10 p-1 rounded-full group-hover:translate-x-1 transition-transform">
+        <ArrowRight className="w-4 h-4" />
+      </div>
+    </a>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    {posts.map((post) => (
+      <PostCard post={post} categoryLabel={cardLabel} />
+    ))}
+  </div>
+</section>

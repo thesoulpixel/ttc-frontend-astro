@@ -1,0 +1,266 @@
+---
+import { TrendingUp, ChevronRight } from 'lucide-react';
+
+const { featuredPosts } = Astro.props;
+
+// Fallback data
+const fallbackPosts = [{
+  title: "How Gravity Payments CEO Dan Price Raised Minimum Wage to $70k",
+  featuredImage: { node: { sourceUrl: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1600&q=80" } },
+  slug: "mock-gravity-payments",
+  growthValue: "$70,000 M" 
+}];
+
+// Use fetched posts or fallback
+const posts = (featuredPosts && featuredPosts.length > 0) ? featuredPosts : fallbackPosts;
+// Helper to extract money string from title (Supports $, £, €, etc.)
+const extractMoney = (str) => {
+  // Matches currency symbol followed by numbers and optional suffixes (k, m, b)
+  // Must start with a currency symbol.
+  const match = str.match(/[$€£¥][0-9,.]+[kKmMbB]?/);
+  return match ? match[0] : null;
+};
+
+// Process posts to include extracted growth value
+const postsWithGrowth = posts.map(post => ({
+  ...post,
+  extractedGrowth: extractMoney(post.title) || post.growthValue || "$0" // Fallback
+}));
+
+const activeGrowthValue = postsWithGrowth[0].extractedGrowth;
+---
+
+<section class="relative bg-gradient-to-r from-[#6366f1] to-[#3b82f6] overflow-hidden pt-12 pb-16 lg:pt-20 lg:pb-20 font-['Inter']">
+  <!-- Dynamic Gradient Background -->
+
+  <div class="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
+    
+    <div class="grid lg:grid-cols-[45%_auto] gap-10 lg:gap-16 items-center">
+      
+      <!-- Text Content -->
+      <div class="space-y-6 text-left order-1 lg:order-none">
+        
+        <h1 class="text-4xl sm:text-5xl lg:text-5xl font-extrabold text-white leading-[1.1] tracking-tight">
+          <span class="block">Unlock the secrets to</span>
+          <span class="block text-[#4ade80]">7-figure <span class="text-white">online</span></span>
+          <span class="block text-white">businesses.</span>
+        </h1>
+
+        <p class="text-base text-white/90 max-w-lg leading-snug font-normal opacity-90">
+          Dive into our database of 4,000+ case studies and learn how ordinary people built extraordinary companies.
+        </p>
+
+        <div class="relative max-w-lg mt-4">
+             <form id="hero-subscribe-form" class="flex flex-col sm:flex-row gap-2 bg-white p-2 rounded-xl shadow-2xl transition-all duration-300">
+              <input 
+                type="email" 
+                id="hero-email"
+                name="email_address"
+                required
+                placeholder="Enter your email" 
+                class="w-full px-4 py-3 rounded-lg outline-none text-gray-900 bg-transparent placeholder-gray-400 text-base"
+              />
+              <button type="submit" id="hero-submit-btn" class="w-full sm:w-auto bg-[#22c55e] text-white font-bold px-8 py-3 rounded-lg hover:bg-green-500 hover:shadow-lg transition-all duration-300 whitespace-nowrap text-base disabled:opacity-75 disabled:cursor-not-allowed">
+                Join Community
+              </button>
+            </form>
+
+            <div id="hero-success-msg" class="hidden absolute inset-0 bg-white rounded-xl shadow-2xl flex flex-col sm:flex-row items-center justify-center text-center sm:text-left p-2 sm:p-4 gap-1 sm:gap-3 border-2 border-green-100 z-10 transition-all">
+                <p class="text-[#22c55e] font-black text-lg flex items-center gap-2 whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Subscribed!
+                </p>
+                <p class="text-xs text-gray-400 font-medium sm:whitespace-nowrap">Please check your inbox.</p>
+            </div>
+            
+            <div id="hero-error-msg" class="hidden mt-2 text-red-500 text-xs font-bold px-2">
+                Something went wrong. Please try again.
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4 pt-2">
+          <div class="flex -space-x-3">
+            {[1,2,3,4].map(i => (
+              <div class="w-10 h-10 rounded-full border-[3px] border-[#4F46E5] bg-gray-200 overflow-hidden relative z-10 ring-2 ring-white/10">
+                <img src={`https://i.pravatar.cc/100?img=${i+20}`} alt="User" class="w-full h-full object-cover" loading="lazy" />
+              </div>
+            ))}
+          </div>
+          <p class="text-white text-sm font-bold tracking-wide">Joined by 50,000+ entrepreneurs</p>
+        </div>
+      </div>
+
+      <!-- Hero Image Card -->
+      <div class="relative w-full order-2 lg:order-none lg:pl-10 select-none">
+         
+         <!-- Tilted Card Look with Click Handler (Tilted LEFT: -rotate-2) -->
+         <div id="hero-card-container" class="relative w-full aspect-[16/10] -rotate-2 hover:rotate-0 hover:scale-[1.01] transition-all duration-300 ease-out p-1 bg-white/20 backdrop-blur-sm rounded-[2rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] border border-white/20 group cursor-pointer">
+            
+            <div class="w-full h-full rounded-[1.8rem] relative bg-[#1e1b4b]">
+                <div id="hero-slider-track" class="relative w-full h-full">
+                {postsWithGrowth.map((post, index) => (
+                    <div class={`absolute inset-0 w-full h-full transition-opacity duration-500 js-slide-item ${index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}>
+                        <!-- Clipped Image Container -->
+                        <div class="absolute inset-0 w-full h-full rounded-[1.8rem] overflow-hidden">
+                            <img 
+                                src={post.featuredImage?.node?.sourceUrl} 
+                                alt={post.title} 
+                                class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-500"
+                                loading={index === 0 ? "eager" : "lazy"}
+                                fetchpriority={index === 0 ? "high" : "auto"}
+                            />
+                            
+                            <!-- Overlay gradient -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#1e1b4b]/90 via-[#1e1b4b]/20 to-transparent"></div>
+                        </div>
+
+                         <div class="absolute bottom-8 left-6 right-10 text-white z-40 pointer-events-auto">
+                            <!-- Clickable Heading -->
+                            <a href={`/post/${post.slug}`} data-astro-prefetch="viewport" class="block group/link">
+                              <h3 class="text-xs sm:text-xl font-bold leading-tight mb-1 tracking-[-0.5px] group-hover/link:underline decoration-white/50 underline-offset-4">{post.title}</h3>
+                            </a>
+                         </div>
+
+                        <!-- Read Story Button (Hanging out) -->
+                         <a 
+                            href={`/post/${post.slug}`} 
+                            data-astro-prefetch="viewport" 
+                            class="absolute bottom-0 right-0 translate-x-[10%] translate-y-[10%] sm:translate-x-[30%] sm:translate-y-[30%] bg-[#ff3b30] hover:bg-red-600 text-white text-[8px] sm:text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-xl z-50 transition-transform hover:scale-105 pointer-events-auto whitespace-nowrap"
+                            title="Read Story"
+                        >
+                            Read Story
+                        </a>
+                    </div>
+                ))}
+                </div>
+            </div>
+
+            <!-- Floating Growth Badge (Left side, Smaller) -->
+            <div class="absolute -bottom-4 -left-3 sm:-left-6 bg-white rounded-lg p-2.5 sm:p-3 shadow-[0_15px_30px_rgba(0,0,0,0.15)] flex items-center gap-2.5 z-30 min-w-[120px] border border-gray-100 animate-fade-in-up pointer-events-none">
+              <div class="bg-green-100 p-1.5 rounded-md shrink-0">
+                <TrendingUp className="w-4 h-4 text-[#22c55e]" />
+              </div>
+              <div class="leading-none">
+                <p class="text-[8px] uppercase font-bold text-gray-400 tracking-widest mb-0.5">Revenue</p>
+                <p id="growth-value-display" class="text-base font-black text-gray-900 tracking-[-0.5px]">{activeGrowthValue}</p>
+              </div>
+            </div>
+
+             <!-- Slider Dots -->
+             <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20 pointer-events-none">
+                {postsWithGrowth.map((_, index) => (
+                  <div class={`h-1.5 rounded-full transition-all duration-300 js-slide-dot ${index === 0 ? 'bg-[#22c55e] w-6' : 'bg-white/30 w-1.5'}`}></div>
+                ))}
+             </div>
+
+         </div>
+         <p class="text-center text-white/40 text-xs mt-8 font-medium tracking-widest uppercase">Tap card to view next story</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ initialPosts: postsWithGrowth }}>
+  function initHeroSlider() {
+    const container = document.getElementById('hero-card-container');
+    const items = document.querySelectorAll('.js-slide-item');
+    const dots = document.querySelectorAll('.js-slide-dot');
+    const growthDisplay = document.getElementById('growth-value-display');
+    
+    // Subscribe Form Logic
+    const form = document.getElementById('hero-subscribe-form');
+    const emailInput = document.getElementById('hero-email');
+    const submitBtn = document.getElementById('hero-submit-btn');
+    const successMsg = document.getElementById('hero-success-msg');
+    const errorMsg = document.getElementById('hero-error-msg');
+    
+    if (form) {
+        // Remove existing listener to avoid duplicates if re-init (simple way is to clone or just use onclick which overrides)
+        // Here we just add it, but since we run this on swap, we need to be careful.
+        // Better: use a named function or attach it once. 
+        // For simplicity in this context, we'll assign onsubmit directly.
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const originalBtnText = submitBtn.innerText;
+            submitBtn.disabled = true;
+            submitBtn.innerText = '...';
+            errorMsg.classList.add('hidden');
+
+            const email = emailInput.value;
+            const kitUrl = 'https://app.kit.com/forms/8902621/subscriptions';
+
+            try {
+                const formData = new FormData();
+                formData.append('email_address', email);
+
+                await fetch(kitUrl, {
+                    method: 'POST',
+                    body: formData,
+                    mode: 'no-cors' 
+                });
+
+                // Success
+                form.classList.add('opacity-0', 'pointer-events-none');
+                successMsg.classList.remove('hidden');
+
+            } catch (err) {
+                console.error(err);
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalBtnText;
+                errorMsg.classList.remove('hidden');
+            }
+        };
+    }
+
+
+    if (!container || items.length === 0) return;
+
+    let currentIndex = 0;
+    const totalSlides = items.length;
+    
+    // Use extractedGrowth from the processed data
+    const growthValues = initialPosts.map(p => p.extractedGrowth || "$0"); 
+
+    const showSlide = (index) => {
+        items.forEach((item, i) => {
+            if (i === index) {
+                item.classList.remove('opacity-0', 'z-0');
+                item.classList.add('opacity-100', 'z-10');
+            } else {
+                item.classList.remove('opacity-100', 'z-10');
+                item.classList.add('opacity-0', 'z-0');
+            }
+        });
+
+        dots.forEach((dot, i) => {
+             if (i === index) {
+                dot.classList.remove('bg-white/30', 'w-1.5');
+                dot.classList.add('bg-[#22c55e]', 'w-6');
+             } else {
+                dot.classList.remove('bg-[#22c55e]', 'w-6');
+                dot.classList.add('bg-white/30', 'w-1.5');
+             }
+        });
+        
+        if(growthDisplay) {
+             // reliable simple update if arrays align
+             if(growthValues[index]) growthDisplay.textContent = growthValues[index];
+        }
+    };
+
+    container.addEventListener('click', (e) => {
+        // If the user clicked a link (like the heading or read story button), do nothing (let the link work)
+        if (e.target.closest('a')) return;
+
+        // Otherwise, slide
+        currentIndex = (currentIndex + 1) % totalSlides;
+        showSlide(currentIndex);
+    });
+  }
+
+  // Run on load and after Astro swaps
+  initHeroSlider();
+  document.addEventListener('astro:after-swap', initHeroSlider);
+</script>

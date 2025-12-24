@@ -1,0 +1,82 @@
+---
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { ClientRouter } from 'astro:transitions';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="The Times Clock is the world's leading database of actionable business case studies." />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>About - The Times Clock</title>
+    <ClientRouter />
+    <meta name="description" content="The Times Clock is the world's leading database of actionable business case studies. Learn from founders who started with nothing and built empires." />
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content="About - The Times Clock" />
+    <meta property="og:description" content="The Times Clock is the world's leading database of actionable business case studies." />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-white font-['Inter',sans-serif] antialiased text-gray-900">
+    <Navbar />
+    
+    <main class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <div class="max-w-4xl mx-auto">
+        
+        <!-- Header -->
+        <p class="text-[#ff3b30] font-bold text-xs uppercase tracking-[0.2em] mb-8">Our Mission</p>
+        
+        <!-- Main Title -->
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 uppercase tracking-tighter leading-[0.95] mb-12">
+          Building the<br />
+          Future of Commerce.
+        </h1>
+
+        <!-- Subheadline -->
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 leading-tight mb-10 max-w-3xl">
+          The Times Clock is the world's leading database of actionable business case studies.
+        </h2>
+
+        <!-- Introduction Text -->
+        <div class="prose prose-lg prose-gray text-gray-500 leading-relaxed mb-16 max-w-3xl">
+          <p class="mb-6">
+            We believe that the best way to learn how to build a business is by looking at what is already working. Since 2020, we have documented thousands of stories from founders who started with nothing and built multi-million dollar empires.
+          </p>
+          <p>
+            Our goal is simple: to democratize business knowledge. We strip away the fluff and focus on the raw numbers, the specific tech stacks, and the exact marketing strategies that drive growth.
+          </p>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-12 border-y border-gray-100 py-12 mb-16">
+          <div>
+            <span class="block text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight mb-2">4,400+</span>
+            <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Verified Case Studies</span>
+          </div>
+          <div>
+             <span class="block text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight mb-2">50,000+</span>
+             <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Community Members</span>
+          </div>
+        </div>
+
+        <!-- Philosophy Section -->
+        <div class="max-w-3xl">
+          <h3 class="text-3xl font-bold text-gray-900 tracking-tight mb-6">Our Editorial Philosophy</h3>
+          <p class="text-lg text-gray-500 leading-relaxed border-l-4 border-gray-900 pl-6">
+            We don't do "puff pieces." Every story we publish must provide actionable value. Whether it's a solo-founder running a SaaS or a massive D2C brand, we dive deep into the mechanics of their success.
+          </p>
+        </div>
+
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>

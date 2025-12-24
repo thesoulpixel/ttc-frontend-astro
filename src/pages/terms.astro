@@ -1,0 +1,85 @@
+---
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { ClientRouter } from 'astro:transitions';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Terms of Service - The Times Clock" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Terms of Service - The Times Clock</title>
+    <ClientRouter />
+    <meta name="description" content="Terms of Service for The Times Clock. Read our user conduct, intellectual property rights, and disclaimers." />
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content="Terms of Service - The Times Clock" />
+    <meta property="og:description" content="Terms of Service for The Times Clock. Read our user conduct, intellectual property rights, and disclaimers." />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-white font-['Inter',sans-serif] antialiased text-gray-900">
+    <Navbar />
+    
+    <main class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <div class="max-w-3xl mx-auto">
+        
+        <!-- Header -->
+        <p class="text-[#ff3b30] font-bold text-xs uppercase tracking-[0.2em] mb-8">Legal</p>
+        
+        <!-- Main Title -->
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 uppercase tracking-tighter leading-[0.95] mb-4">
+          Terms of Service
+        </h1>
+
+        <p class="text-gray-400 italic mb-16">Effective Date: May 20, 2024</p>
+
+        <!-- Content -->
+        <div class="space-y-12">
+            
+            <!-- Section 1 -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 uppercase tracking-tight mb-6">1. Acceptance of Terms</h2>
+                <p class="text-gray-500 leading-relaxed text-lg">
+                    By accessing and using The Times Clock website, you accept and agree to be bound by the terms and provision of this agreement.
+                </p>
+            </section>
+
+            <!-- Section 2 -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 uppercase tracking-tight mb-6">2. User Conduct</h2>
+                <p class="text-gray-500 leading-relaxed text-lg">
+                    Users are expected to use the platform for lawful purposes only. Any harassment, spamming, or unauthorized use of the content provided in our case studies is strictly prohibited.
+                </p>
+            </section>
+
+            <!-- Section 3 -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 uppercase tracking-tight mb-6">3. Intellectual Property</h2>
+                <p class="text-gray-500 leading-relaxed text-lg">
+                    The content, organization, graphics, design, and other matters related to the Site are protected under applicable copyrights and other proprietary laws. The copying, redistribution, use or publication by you of any such matters or any part of the Site is strictly prohibited.
+                </p>
+            </section>
+
+            <!-- Section 4 -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 uppercase tracking-tight mb-6">4. Disclaimer</h2>
+                <p class="text-gray-500 leading-relaxed text-lg">
+                    The information contained on the website is for general information purposes only. While we endeavor to keep the information up to date and correct, we make no representations or warranties of any kind.
+                </p>
+            </section>
+
+        </div>
+
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>

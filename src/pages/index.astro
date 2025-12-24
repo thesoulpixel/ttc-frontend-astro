@@ -1,0 +1,120 @@
+---
+import { getPostsByCategory } from '../lib/api';
+import Hero from '../components/Hero.astro';
+import CategorySection from '../components/CategorySection.astro';
+import Layout from '../layouts/Layout.astro';
+import { ArrowRight } from 'lucide-react';
+
+// FIX: Fetch 4 posts for ALL categories now
+const { nodes: featuredPosts } = await getPostsByCategory('Featured', 5);
+const { nodes: starterStories } = await getPostsByCategory('Starter Story', 4);
+const { nodes: brandStories } = await getPostsByCategory('Brand Story', 4);
+const { nodes: financeStories } = await getPostsByCategory('Finance', 4);
+---
+
+<Layout title="The Times Clock">
+    <main>
+      <Hero featuredPosts={featuredPosts} />
+
+      <div class="mt-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-24 space-y-12">
+        <CategorySection title="Starter Story Case Studies" posts={starterStories} cardLabel="Case Studies" slug="starter-story" />
+        <CategorySection title="Brand Story Deep Dives" posts={brandStories} cardLabel="Brand Story" slug="brand-story" />
+        <CategorySection title="Finance & Investment" posts={financeStories} cardLabel="Case Studies" slug="finance" />
+      </div>
+
+      <div class="max-w-4xl mx-auto px-4 py-24 text-center">
+        
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 text-gray-500 text-sm font-semibold tracking-wide">
+             <div class="flex -space-x-2">
+                {[1,2,3,4,5].map(i => (
+                  <img src={`https://i.pravatar.cc/100?img=${i+30}`} class="w-8 h-8 rounded-full border-2 border-white ring-1 ring-gray-100" alt="Member" />
+                ))}
+                 <div class="w-8 h-8 rounded-full bg-[#22c55e] border-2 border-white flex items-center justify-center text-[10px] text-white font-bold">
+                    +5k
+                 </div>
+              </div>
+              <p>Over 5,000 more case studies live there...</p>
+        </div>
+
+        <div class="bg-white rounded-[2.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] p-8 sm:p-16 border border-gray-100">
+           <h2 class="text-3xl sm:text-5xl font-[900] text-gray-900 leading-tight mb-4 tracking-tight">
+            Join the elite circle of <br class="hidden sm:block" />
+            <span class="relative inline-block">
+                modern founders
+                <svg class="absolute w-full h-3 -bottom-1 left-0 text-[#22c55e]" viewBox="0 0 100 10" preserveAspectRatio="none">
+                    <path d="M0 5 Q 50 10 100 5" stroke="currentColor" stroke-width="4" fill="none" />
+                </svg>
+            </span>
+           </h2>
+           
+           <div class="relative max-w-xl mx-auto mt-10">
+               <form id="footer-subscribe-form" class="flex flex-col sm:flex-row gap-3">
+                 <input type="email" id="footer-email" name="email_address" required placeholder="Your email address" class="w-full px-6 py-4 rounded-xl border border-gray-200 outline-none focus:border-[#22c55e] focus:ring-2 focus:ring-[#22c55e]/20 transition-all text-lg placeholder-gray-400" />
+                 <button type="submit" id="footer-submit-btn" class="bg-[#111827] text-white px-8 py-4 rounded-xl font-bold hover:bg-black transition-all hover:scale-[1.02] shadow-xl flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-75">
+                    Get Early Access <ArrowRight className="w-5 h-5" />
+                 </button>
+               </form>
+
+               <div id="footer-success-msg" class="hidden absolute inset-0 bg-white rounded-xl shadow-xl flex flex-col sm:flex-row items-center justify-center text-center sm:text-left gap-1 sm:gap-4 text-[#22c55e] font-bold text-lg border-2 border-green-100 z-10">
+                   <div class="flex items-center gap-2 whitespace-nowrap">
+                       <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 border-2 border-[#22c55e] rounded-full p-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                       You're on the list!
+                   </div>
+                   <p class="text-sm text-gray-400 font-medium sm:whitespace-nowrap">Check your inbox.</p>
+               </div>
+               
+               <div id="footer-error-msg" class="hidden mt-2 text-red-500 text-sm font-bold">
+                    Something went wrong. Please try again.
+               </div>
+           </div>
+
+           <script>
+            function initFooterForm() {
+                const form = document.getElementById('footer-subscribe-form');
+                const emailInput = document.getElementById('footer-email');
+                const submitBtn = document.getElementById('footer-submit-btn');
+                const successMsg = document.getElementById('footer-success-msg');
+                const errorMsg = document.getElementById('footer-error-msg');
+
+                if (form) {
+                    form.onsubmit = async (e) => {
+                        e.preventDefault();
+                        const originalBtnContent = submitBtn.innerHTML;
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = 'Wait...';
+                        errorMsg.classList.add('hidden');
+
+                        const email = emailInput.value;
+                        const kitUrl = 'https://app.kit.com/forms/8902621/subscriptions';
+
+                        try {
+                            const formData = new FormData();
+                            formData.append('email_address', email);
+
+                            await fetch(kitUrl, {
+                                method: 'POST',
+                                body: formData,
+                                mode: 'no-cors' 
+                            });
+
+                            // Success
+                            form.classList.add('opacity-0', 'pointer-events-none');
+                            successMsg.classList.remove('hidden');
+
+                        } catch (err) {
+                            console.error(err);
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalBtnContent;
+                            errorMsg.classList.remove('hidden');
+                        }
+                    };
+                }
+            }
+            
+            initFooterForm();
+            document.addEventListener('astro:after-swap', initFooterForm);
+           </script>
+        </div>
+      </div>
+    </main>
+</Layout>

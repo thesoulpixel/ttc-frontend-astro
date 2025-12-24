@@ -1,0 +1,154 @@
+---
+const logoUrl = "/logo.png";
+import { Menu, X, ArrowRight } from 'lucide-react';
+---
+
+<nav 
+  id="main-navbar"
+  class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100/50 shadow-sm transition-all duration-300 h-[64px]"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between transition-all duration-300" id="nav-container">
+    
+    <!-- Logo -->
+    <a href="/" data-astro-prefetch="viewport" class="flex-shrink-0 flex items-center group relative z-50">
+        <img 
+            src={logoUrl} 
+            alt="The Times Clock" 
+            width="150"
+            height="40"
+            class="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+            loading="eager"
+            onerror="this.src='https://via.placeholder.com/150x50?text=LOGO'" 
+        />
+    </a>
+
+    <!-- Desktop Menu -->
+    <div class="hidden md:flex items-center gap-8">
+        <div class="flex items-center gap-8 text-[13px] font-bold text-gray-600 tracking-wider uppercase font-['Inter']">
+          <a href="/category/starter-story" data-astro-prefetch="viewport" class="hover:text-black hover:tracking-widest transition-all duration-300">Starter Story</a>
+          <a href="/category/brand-story" data-astro-prefetch="viewport" class="hover:text-black hover:tracking-widest transition-all duration-300">Brand Story</a>
+          <a href="/category/finance" data-astro-prefetch="viewport" class="hover:text-black hover:tracking-widest transition-all duration-300">Finance</a>
+        </div>
+
+        <a href="/subscribe" class="bg-[#22c55e] text-white font-bold px-6 py-2.5 rounded-lg shadow-[0_4px_14px_0_rgba(34,197,94,0.39)] hover:bg-green-600 hover:shadow-[0_6px_20px_rgba(34,197,94,0.23)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 text-[11px] tracking-widest uppercase flex items-center gap-2">
+          Subscribe <ArrowRight className="w-3 h-3" />
+        </a>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button id="mobile-menu-btn" class="md:hidden text-gray-900 z-50 p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer">
+        <Menu className="w-8 h-8" />
+    </button>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  <div 
+    id="mobile-menu" 
+    class="fixed top-0 left-0 w-full h-[100dvh] bg-white z-[100] flex flex-col transition-all duration-300 md:hidden opacity-0 invisible"
+  >
+      <!-- Mobile Overlay Header -->
+      <div class="h-[64px] flex items-center justify-between px-4 sm:px-6 border-b border-gray-100 bg-white shrink-0">
+        <a href="/" data-astro-prefetch="viewport" class="h-10 block">
+             <!-- Logo in Menu -->
+             <img src="/logo.png" alt="The Times Clock" class="h-full w-auto object-contain" onerror="this.src='https://via.placeholder.com/150x50?text=LOGO'" />
+        </a>
+        <button id="mobile-menu-close-btn" class="p-2 text-gray-900 hover:bg-gray-100 rounded-full transition-colors cursor-pointer">
+            <X className="w-8 h-8" />
+        </button>
+      </div>
+      
+      <!-- Mobile Overlay Content -->
+      <div class="flex-1 flex flex-col px-6 pt-10 space-y-8 overflow-y-auto bg-white">
+        <nav class="flex flex-col space-y-6">
+            <a href="/category/starter-story" data-astro-prefetch="viewport" class="nav-link-mobile text-3xl font-black text-[#0F172A] uppercase tracking-tight hover:text-[#22c55e] transition-colors">
+            Starter Story
+            </a>
+            <a href="/category/brand-story" data-astro-prefetch="viewport" class="nav-link-mobile text-3xl font-black text-[#0F172A] uppercase tracking-tight hover:text-[#22c55e] transition-colors">
+            Brand Story
+            </a>
+            <a href="/category/finance" data-astro-prefetch="viewport" class="nav-link-mobile text-3xl font-black text-[#0F172A] uppercase tracking-tight hover:text-[#22c55e] transition-colors">
+            Finance
+            </a>
+        </nav>
+
+        <div class="w-full h-px bg-gray-100 my-4 shrink-0"></div>
+
+        <a href="/subscribe" class="w-full bg-[#22c55e] hover:bg-green-600 text-white font-black text-lg py-4 rounded pointer-events-auto transition-colors shadow-sm tracking-wide uppercase shrink-0 mb-8 flex justify-center items-center">
+            Join 50k+ Founders
+        </a>
+      </div>
+  </div>
+</nav>
+
+<style>
+  /* Shrink state classes */
+  .navbar-shrink {
+    height: 56px !important;
+    background-color: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Mobile menu open state */
+  .mobile-menu-open {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+</style>
+
+<script>
+  function initNavbar() {
+      const nav = document.getElementById('main-navbar');
+      const menuBtn = document.getElementById('mobile-menu-btn');
+      const closeBtn = document.getElementById('mobile-menu-close-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const body = document.body;
+
+      if (!nav || !menuBtn || !mobileMenu || !closeBtn) return;
+
+      // Scroll Handler
+      const handleScroll = () => {
+        if (window.scrollY > 20) {
+          nav.classList.add('navbar-shrink');
+        } else {
+          nav.classList.remove('navbar-shrink');
+        }
+      };
+      
+      // Remove existing listener to avoid duplicates if re-init
+      window.removeEventListener('scroll', handleScroll);
+      window.addEventListener('scroll', handleScroll);
+
+      // Menu Toggle Logic
+      const openMenu = () => {
+          mobileMenu.classList.add('mobile-menu-open');
+          body.style.overflow = 'hidden'; // Lock scroll
+      };
+
+      const closeMenu = () => {
+          mobileMenu.classList.remove('mobile-menu-open');
+          body.style.overflow = ''; // Unlock scroll
+      };
+
+      // Events
+      menuBtn.onclick = (e) => {
+          e.stopPropagation();
+          openMenu();
+      };
+
+      closeBtn.onclick = (e) => {
+          e.stopPropagation();
+          closeMenu();
+      };
+
+      // Close on link click
+      document.querySelectorAll('.nav-link-mobile').forEach(link => {
+          link.onclick = closeMenu;
+      });
+  }
+
+  // Run on load
+  initNavbar();
+  
+  // Run on Astro page swaps (if View Transitions are used)
+  document.addEventListener('astro:after-swap', initNavbar);
+</script>

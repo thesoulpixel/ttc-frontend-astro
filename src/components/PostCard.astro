@@ -1,0 +1,108 @@
+---
+import { CheckCircle2, User, ChevronRight } from 'lucide-react';
+
+const { post, categoryLabel } = Astro.props;
+if (!post) return null;
+
+const { title, featuredImage, author, date, slug } = post;
+
+// Use image or fallback to logo if missing
+const imageUrl = featuredImage?.node?.sourceUrl 
+  ? featuredImage.node.sourceUrl 
+  : "/logo.png"; 
+
+const authorImg = author?.node?.avatar?.url;
+const authorName = author?.node?.name || "Editor";
+const formattedDate = date ? new Date(date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Recent';
+---
+
+<a href={`/post/${slug}`} data-astro-prefetch="viewport" class="block h-full group">
+  <article class="flex flex-col sm:flex-row gap-5 sm:gap-7 p-5 bg-white rounded-2xl border border-gray-100/80 hover:border-gray-200 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_24px_rgba(0,0,0,0.06)] transition-all duration-300 h-full relative z-10 group overflow-hidden">
+    
+    <div class="w-full sm:w-[160px] md:w-[200px] shrink-0">
+      <div class="aspect-[4/3] sm:aspect-[3/4] sm:h-full rounded-xl overflow-hidden relative shadow-sm border border-gray-100">
+        <img 
+          src={imageUrl} 
+          alt={title} 
+          loading="lazy"
+          class={`w-full h-full ${imageUrl === '/logo.png' ? 'object-contain p-6 bg-gray-50 opacity-40' : 'object-cover'} transform group-hover:scale-105 transition-transform duration-700 ease-out`}
+        />
+        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors"></div>
+      </div>
+    </div>
+
+    <div class="flex flex-col flex-1 min-w-0 py-1">
+      <div>
+        <div class="flex items-center justify-between mb-3">
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-bold bg-[#a855f7]/10 text-[#a855f7] uppercase tracking-wider border border-[#a855f7]/20 whitespace-nowrap">
+            {categoryLabel || 'STARTER STORY'}
+            </span>
+            <span class="text-[10px] sm:text-[11px] font-semibold text-gray-400 uppercase tracking-widest whitespace-nowrap ml-2">{formattedDate}</span>
+        </div>
+        
+        <h3 class="text-xl sm:text-2xl font-[800] text-gray-900 leading-[1.2] mb-4 group-hover:text-[#4F46E5] transition-colors tracking-tight line-clamp-2 sm:line-clamp-3 break-words">
+          {title}
+        </h3>
+
+        <ul class="space-y-2 mb-4"> 
+          {(() => {
+                // Extract points from content
+                let points = [];
+                if (post.content) {
+                    // Try to find list items first
+                    const listMatches = post.content.match(/<li>(.*?)<\/li>/g);
+                    if (listMatches) {
+                         points = listMatches.slice(0, 3).map(item => item.replace(/<\/?li>/g, '').replace(/<[^>]*>/g, '').trim());
+                    } 
+                    
+                    // If no list items, split by sentences
+                    if (points.length === 0) {
+                        const sentences = post.content.replace(/<[^>]*>/g, '').split(/[.!?]/).filter(s => s.trim().length > 10);
+                        points = sentences.slice(0, 3).map(s => s.trim());
+                    }
+                }
+
+                // Fallback defaults if extraction fails
+                if (points.length === 0) {
+                     points = [
+                        "Revenue model & margins",
+                        "Customer acquisition strategy",
+                        "Tech stack & marketing tools"
+                    ];
+                }
+
+                // Ensure always 3 items for layout consistency
+                while (points.length < 3) {
+                    points.push("Business strategy & insights");
+                }
+
+                return points.slice(0, 3).map(point => (
+                  <li class="flex items-start gap-3 text-xs sm:text-[13px] font-medium text-gray-600">
+                    <CheckCircle2 className="w-4 h-4 text-[#22c55e] mt-0.5 shrink-0" />
+                    <span class="line-clamp-1">{point}</span>
+                  </li>
+                ));
+          })()}
+        </ul>
+      </div>
+
+      <div class="flex items-center justify-between pt-5 border-t border-gray-100/80 mt-auto gap-4">
+        <div class="flex items-center gap-2.5 min-w-0">
+            {authorImg ? (
+            <img src={authorImg} alt={authorName} class="w-6 h-6 rounded-full ring-2 ring-white shadow-sm shrink-0" />
+            ) : (
+            <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center ring-2 ring-white shrink-0">
+                <User className="w-3 h-3 text-gray-400" />
+            </div>
+            )}
+            <span class="text-xs font-bold text-gray-700 truncate">{authorName}</span>
+        </div>
+
+        <div class="flex items-center gap-1.5 text-xs font-bold text-blue-600 group-hover:translate-x-1 transition-transform whitespace-nowrap shrink-0">
+            Read Story
+            <ChevronRight className="w-3.5 h-3.5" />
+        </div>
+      </div>
+    </div>
+  </article>
+</a>

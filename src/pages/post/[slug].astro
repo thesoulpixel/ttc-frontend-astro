@@ -1,0 +1,391 @@
+---
+import { getAllPostSlugs, getPostBySlug, getPostsByCategory } from '../../lib/api';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import { Facebook, Twitter, Linkedin, Link as LinkIcon, ChevronLeft, ChevronRight, Share2, Copy } from 'lucide-react';
+import { ClientRouter } from 'astro:transitions';
+import AdBanner from '../../components/AdBanner.astro';
+
+export async function getStaticPaths() {
+  const allSlugs = await getAllPostSlugs();
+  return allSlugs.map((node) => ({ params: { slug: node.slug } }));
+}
+
+const { slug } = Astro.params;
+const post = await getPostBySlug(slug);
+if (!post) return Astro.redirect('/404');
+
+const category = post.categories?.nodes[0]?.name || 'News';
+const { nodes: relatedPosts } = await getPostsByCategory(category, 8);
+const formattedDate = new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const authorName = post.author?.node?.name || 'Editor';
+const authorAvatar = post.author?.node?.avatar?.url;
+const featuredImgUrl = post.featuredImage?.node?.sourceUrl;
+const postUrl = typeof window !== 'undefined' ? window.location.href : `https://thetimesclock.com/post/${slug}`; // Fallback/Client-side
+const cleanExcerpt = post.excerpt ? post.excerpt.replace(/<[^>]*>/g, '').slice(0, 160) : "Read this amazing story on The Times Clock.";
+
+// --- AD INJECTION LOGIC ---
+const AD_SLOT_ID = "9786811867";
+const PUBLISHER_ID = "ca-pub-9250289969484573"; 
+
+function injectAdsIntoContent(htmlContent) {
+  if (!htmlContent) return "";
+
+  // Split content into paragraphs (safely handling the closing tag)
+  const paragraphs = htmlContent.split('</p>');
+  const totalParagraphs = paragraphs.length - 1; 
+  
+  if (totalParagraphs < 6) {
+    return htmlContent; // Too short for ads
+  }
+
+  // Determine Insertion Indices
+  let insertionIndices = [];
+  
+  if (totalParagraphs <= 15) {
+    // 1 Ad at ~50%
+    insertionIndices.push(Math.floor(totalParagraphs / 2));
+  } else if (totalParagraphs <= 25) {
+    // 2 Ads at ~30% and ~60%
+    insertionIndices.push(Math.floor(totalParagraphs / 3));
+    insertionIndices.push(Math.floor((totalParagraphs * 2) / 3));
+  } else {
+    // 3 Ads at ~25%, ~50%, ~75%
+    insertionIndices.push(Math.floor(totalParagraphs / 4));
+    insertionIndices.push(Math.floor((totalParagraphs * 2) / 4));
+    insertionIndices.push(Math.floor((totalParagraphs * 3) / 4));
+  }
+
+  // The Ad Unit HTML (Layout Safe)
+  const getAdHtml = (index) => `
+    <div class="ad-in-article my-10 flex justify-center items-center bg-gray-50 border border-gray-100 rounded-lg overflow-hidden min-h-[280px] relative w-full">
+      <span class="text-[10px] text-gray-400 absolute top-2 right-3 uppercase tracking-widest font-semibold">Advertisement</span>
+      
+      <!-- In-Article Ad Unit -->
+      <ins class="adsbygoogle"
+           style="display:block; text-align:center; width: 100%;"
+           data-ad-layout="in-article"
+           data-ad-format="fluid"
+           data-ad-client="${PUBLISHER_ID}"
+           data-ad-slot="${AD_SLOT_ID}"></ins>
+      
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  `;
+
+  // Rebuild content with ads
+  return paragraphs.map((p, index) => {
+    // Re-add the </p> that split removed
+    const paragraphHtml = p + '</p>';
+    
+    // Check if we should insert an ad after this paragraph
+    if (insertionIndices.includes(index)) {
+      return paragraphHtml + getAdHtml(index);
+    }
+    return paragraphHtml;
+  }).join('');
+}
+
+const processedContent = injectAdsIntoContent(post.content);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{post.title} - The Times Clock</title>
+    <meta name="description" content={cleanExcerpt} />
+    <link rel="canonical" href={postUrl} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content={postUrl} />
+    <meta property="og:title" content={post.title} />
+    <meta property="og:description" content={cleanExcerpt} />
+    {featuredImgUrl && <meta property="og:image" content={featuredImgUrl} />}
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={postUrl} />
+    <meta property="twitter:title" content={post.title} />
+    <meta property="twitter:description" content={cleanExcerpt} />
+    {featuredImgUrl && <meta property="twitter:image" content={featuredImgUrl} />}
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+    <ClientRouter />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9250289969484573"
+     crossorigin="anonymous"></script>
+    <style>
+      html { scroll-behavior: smooth; }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      
+      /* Active TOC highlight */
+      .toc-active { color: #22c55e !important; border-left-color: #22c55e !important; }
+    </style>
+  </head>
+  <body class="bg-white font-['Inter',sans-serif] antialiased text-gray-900">
+    <Navbar />
+    
+    <main class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+      
+      <!-- HERO SECTION -->
+      <header class="max-w-[90%] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 mb-20 items-center">
+         <div class="lg:col-span-7 order-2 lg:order-1">
+            {featuredImgUrl ? (
+                <div class="aspect-[16/10] w-full relative rounded-2xl overflow-hidden shadow-sm">
+                    <img src={featuredImgUrl} alt={post.title} class="absolute inset-0 w-full h-full object-cover" loading="eager" fetchpriority="high" />
+                </div>
+            ) : (
+                <div class="aspect-[16/10] w-full bg-gray-100 rounded-2xl flex items-center justify-center text-gray-300">
+                    No Image
+                </div>
+            )}
+         </div>
+
+         <div class="lg:col-span-5 order-1 lg:order-2 flex flex-col justify-center">
+             <div class="flex items-center gap-3 mb-6">
+                <span class="px-3 py-1 bg-black text-white text-[10px] font-bold uppercase tracking-widest rounded-sm">{category}</span>
+                <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">{formattedDate}</span>
+             </div>
+
+             <h1 class="text-3xl md:text-5xl font-black leading-[1.1] mb-8 tracking-tight text-gray-900">
+                {post.title}
+             </h1>
+
+             <div class="flex items-start gap-4 pt-2 border-t border-gray-100 mt-2">
+                {authorAvatar && <img src={authorAvatar} alt={authorName} class="w-12 h-12 rounded-full border border-gray-100 mt-1" />}
+                <div>
+                    <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-0.5">Written By</p>
+                    <p class="font-bold text-gray-900 text-sm mb-2">{authorName}</p>
+                    <div class="flex gap-3 text-gray-400">
+                        <a href="#" class="hover:text-black transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zl-1.161-.31L4.14 2.25H4.14l11.474 17.5H19.2l-5.244-6.38z"/></svg></a>
+                        <a href="#" class="hover:text-[#0077b5] transition-colors"><Linkedin className="w-4 h-4 fill-current" /></a>
+                    </div>
+                </div>
+             </div>
+         </div>
+      </header>
+
+
+      <!-- MAIN CONTENT -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 relative max-w-[95%] mx-auto">
+        
+        <!-- LEFT SIDEBAR: TOC & Desktop Share -->
+        <aside class="hidden lg:block lg:col-span-2">
+            <div class="sticky top-32 flex flex-col gap-10">
+                <!-- Desktop Share Icons -->
+                <!-- Sidebar Content (TOC only now) -->
+
+                <!-- TOC -->
+                <div>
+                     <p class="text-xs font-bold text-gray-900 uppercase tracking-wider mb-4 border-b border-gray-100 pb-2">Table of Contents</p>
+                     <nav id="toc" class="flex flex-col gap-0.5 -ml-4">
+                        <!-- JS Populated -->
+                     </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CENTER CONTENT -->
+        <article class="lg:col-span-7 article-content">
+          <div class="prose prose-lg max-w-none 
+            prose-headings:font-black prose-headings:tracking-tight prose-headings:text-gray-900 prose-headings:mt-12 prose-headings:mb-6 prose-headings:scroll-mt-32
+            prose-p:text-gray-600 prose-p:leading-[1.8] prose-p:font-medium
+            prose-a:text-green-600 prose-a:no-underline prose-a:font-bold hover:prose-a:underline
+            prose-img:rounded-2xl prose-img:shadow-lg prose-img:my-10
+            first-letter:text-6xl first-letter:font-black first-letter:text-black first-letter:mr-3 first-letter:float-left first-letter:leading-[0.8]
+            prose-li:text-gray-600">
+            <div set:html={processedContent} id="post-content-body" />
+          </div>
+
+          <!-- POST FOOTER SHARE -->
+          <div class="mt-16 pt-8 border-t border-gray-100">
+              <p class="text-center text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">Share this article</p>
+              <div class="flex justify-center gap-4">
+                    <button onclick="share('twitter')" class="p-3 rounded-full bg-gray-50 text-gray-600 hover:bg-black hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zl-1.161-.31L4.14 2.25H4.14l11.474 17.5H19.2l-5.244-6.38z"/></svg></button>
+                    <button onclick="share('facebook')" class="p-3 rounded-full bg-gray-50 text-gray-600 hover:bg-[#1877F2] hover:text-white transition-colors"><Facebook className="w-5 h-5" /></button>
+                    <button onclick="share('linkedin')" class="p-3 rounded-full bg-gray-50 text-gray-600 hover:bg-[#0077b5] hover:text-white transition-colors"><Linkedin className="w-5 h-5" /></button>
+                    <button onclick="share('whatsapp')" class="p-3 rounded-full bg-gray-50 text-gray-600 hover:bg-[#25D366] hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"/><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1"/></svg>
+                    </button>
+                    <button onclick="copyLink()" class="p-3 rounded-full bg-gray-50 text-gray-600 hover:bg-gray-800 hover:text-white transition-colors"><Copy className="w-5 h-5" /></button>
+              </div>
+          </div>
+        </article>
+
+        <!-- RIGHT SIDEBAR -->
+        <aside class="lg:col-span-3 space-y-8">
+            <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100/50 sticky top-32">
+                <span class="text-xs font-black text-gray-900 uppercase tracking-widest block mb-4 border-b border-gray-200 pb-2">{category}</span>
+                <h3 class="text-xl font-black leading-tight mb-4 tracking-tight">Start your own success story today.</h3>
+                <p class="text-gray-500 mb-6 text-sm leading-relaxed">Join our community of 50,000+ founders and get daily insights.</p>
+                <a href="/subscribe" class="block text-center w-full bg-[#22c55e] hover:bg-green-600 transition-colors text-white font-black py-3.5 rounded-xl uppercase text-xs tracking-widest shadow-lg shadow-green-500/20 hover:shadow-green-500/30 hover:-translate-y-1 transform duration-200">
+                    Join the Community
+                </a>
+            </div>
+
+            <!-- AdSense: Sidebar Square -->
+            <AdBanner slotId="6603031205" format="rectangle" />
+        </aside>
+      </div>
+
+      <!-- CONTINUE READING SLIDER (Vertical Design) -->
+      <section class="mt-32 pt-12 border-t border-gray-100">
+        <div class="flex items-center justify-between mb-8 px-4">
+             <h2 class="text-2xl font-black text-gray-900 uppercase tracking-tighter">More Stories</h2>
+             <div class="flex gap-2">
+                <button id="slide-left" class="p-2 rounded-full border border-gray-200 hover:bg-gray-100 transition-colors"><ChevronLeft className="w-5 h-5"/></button>
+                <button id="slide-right" class="p-2 rounded-full border border-gray-200 hover:bg-gray-100 transition-colors"><ChevronRight className="w-5 h-5"/></button>
+             </div>
+        </div>
+        
+        <div id="slider-container" class="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-12 px-4 scroll-smooth no-scrollbar">
+            {relatedPosts.map(post => (
+                <div class="min-w-[280px] w-[280px] md:min-w-[380px] snap-start">
+                    <a href={`/post/${post.slug}`} class="block group h-full p-1">
+                        <article class="flex gap-4 h-full items-center">
+                            <!-- Image Left -->
+                            <div class="w-24 h-24 shrink-0 rounded-xl overflow-hidden shadow-sm border border-gray-100 relative">
+                                {post.featuredImage?.node?.sourceUrl ? (
+                                    <img 
+                                        src={post.featuredImage.node.sourceUrl} 
+                                        alt={post.title} 
+                                        class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                ) : (
+                                    <div class="absolute inset-0 w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 group-hover:scale-105 transition-transform duration-500">
+                                         <img src="/logo.png" alt="The Times Clock" class="w-10 h-10 object-contain opacity-50 grayscale" />
+                                    </div>
+                                )}
+                            </div>
+                            <!-- Content Right -->
+                            <div class="flex-1 min-w-0 flex flex-col justify-center">
+                                <div class="mb-1.5 text-[10px] uppercase tracking-wider text-gray-400 font-medium">
+                                     {new Date(post.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                                </div>
+                                <h3 class="text-sm font-bold text-gray-900 leading-snug group-hover:text-blue-600 transition-colors line-clamp-2 mb-2">
+                                    {post.title}
+                                </h3>
+                                <p class="text-[10px] font-bold text-gray-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                    Read <ChevronRight className="w-3 h-3"/>
+                                </p>
+                            </div>
+                        </article>
+                    </a>
+                </div>
+            ))}
+        </div>
+      </section>
+
+    </main>
+
+    <!-- MOBILE SHARE BAR (Fixed Bottom) -->
+    <!-- Mobile Share Bar Removed -->
+
+    <Footer />
+
+    <script define:vars={{ title: post.title }}>
+        // SHARE FUNCTIONS
+        window.share = (platform) => {
+            const url = window.location.href;
+            const text = title;
+            let shareUrl = '';
+
+            switch(platform) {
+                case 'twitter': shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`; break;
+                case 'facebook': shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`; break;
+                case 'linkedin': shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`; break;
+                case 'whatsapp': shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`; break;
+            }
+            if(shareUrl) window.open(shareUrl, '_blank', 'width=600,height=400');
+        };
+
+        window.copyLink = () => {
+            navigator.clipboard.writeText(window.location.href);
+            alert('Link copied to clipboard!');
+        };
+
+        // SLIDER LOGIC
+        const container = document.getElementById('slider-container');
+        document.getElementById('slide-right')?.addEventListener('click', () => container.scrollBy({ left: 320, behavior: 'smooth' }));
+        document.getElementById('slide-left')?.addEventListener('click', () => container.scrollBy({ left: -320, behavior: 'smooth' }));
+
+        // TOC GENERATOR & HIGHLIGHTER
+        const contentBody = document.getElementById('post-content-body');
+        const tocContainer = document.getElementById('toc');
+
+        if (contentBody && tocContainer) {
+            const headings = Array.from(contentBody.querySelectorAll('h1, h2, h3'));
+            
+            if (headings.length === 0) {
+                tocContainer.innerHTML = '<p class="text-xs italic text-gray-400">No headings found.</p>';
+            } else {
+                headings.forEach((heading, index) => {
+                    if (!heading.id) heading.id = `idx-${index}`;
+                    
+                    const link = document.createElement('a');
+                    link.href = `#${heading.id}`;
+                    link.dataset.target = heading.id;
+                    link.className = `group flex items-start gap-2 py-0.5 transition-all text-xs sm:text-sm font-medium text-gray-500 hover:text-gray-900 leading-tight cursor-pointer ${heading.tagName === 'H3' ? 'ml-4 opacity-80' : ''}`;
+                    
+                    const bullet = document.createElement('span');
+                    bullet.className = 'w-1.5 h-1.5 mt-1.5 rounded-full bg-gray-200 shrink-0 transition-colors duration-300 group-hover:bg-gray-400 toc-bullet';
+                    
+                    const text = document.createElement('span');
+                    text.textContent = heading.textContent;
+                    text.className = 'transition-colors duration-200';
+
+                    link.appendChild(bullet);
+                    link.appendChild(text);
+
+                    link.onclick = (e) => {
+                        e.preventDefault();
+                        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        // Update active manually
+                        updateActiveToc(heading.id);
+                    };
+
+                    tocContainer.appendChild(link);
+                });
+
+                function updateActiveToc(activeId) {
+                    document.querySelectorAll('#toc a').forEach(link => {
+                        const bullet = link.querySelector('.toc-bullet');
+                        const text = link.querySelector('span:last-child');
+                        
+                        // Reset
+                        link.classList.remove('text-gray-900');
+                        link.classList.add('text-gray-500');
+                        bullet.classList.remove('bg-[#22c55e]', 'ring-2', 'ring-green-100');
+                        bullet.classList.add('bg-gray-200');
+                        text.classList.remove('font-bold');
+
+                        // Activate
+                        if (link.dataset.target === activeId) {
+                            link.classList.remove('text-gray-500');
+                            link.classList.add('text-gray-900');
+                            bullet.classList.remove('bg-gray-200', 'group-hover:bg-gray-400');
+                            bullet.classList.add('bg-[#22c55e]', 'ring-2', 'ring-green-100');
+                            text.classList.add('font-bold');
+                        }
+                    });
+                }
+
+                // Intersection Observer for Active State
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            updateActiveToc(entry.target.id);
+                        }
+                    });
+                }, { rootMargin: '-100px 0px -60% 0px', threshold: 0.1 });
+
+                headings.forEach(h => observer.observe(h));
+            }
+        }
+    </script>
+  </body>
+</html>
