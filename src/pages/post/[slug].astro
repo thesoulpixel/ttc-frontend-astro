@@ -1,9 +1,7 @@
 ---
 import { getAllPostSlugs, getPostBySlug, getPostsByCategory } from '../../lib/api';
-import Navbar from '../../components/Navbar.astro';
-import Footer from '../../components/Footer.astro';
+import Layout from '../../layouts/Layout.astro';
 import { Facebook, Twitter, Linkedin, Link as LinkIcon, ChevronLeft, ChevronRight, Share2, Copy } from 'lucide-react';
-import { ClientRouter } from 'astro:transitions';
 import AdBanner from '../../components/AdBanner.astro';
 
 export async function getStaticPaths() {
@@ -15,14 +13,21 @@ const { slug } = Astro.params;
 const post = await getPostBySlug(slug);
 if (!post) return Astro.redirect('/404');
 
+// --- AUTO SEO PROCESSING ---
+// 1. Clean HTML out of the excerpt
+const cleanDesc = post.excerpt 
+  ? post.excerpt.replace(/<\/?[^>]+(>|$)/g, "").trim().slice(0, 160) + "..."
+  : "Read this full case study on The Times Clock.";
+
+// 2. Fallback Image
+const seoImage = post.featuredImage?.node?.sourceUrl || "https://thetimesclock.com/default-share-image.jpg";
+
 const category = post.categories?.nodes[0]?.name || 'News';
 const { nodes: relatedPosts } = await getPostsByCategory(category, 8);
 const formattedDate = new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 const authorName = post.author?.node?.name || 'Editor';
 const authorAvatar = post.author?.node?.avatar?.url;
 const featuredImgUrl = post.featuredImage?.node?.sourceUrl;
-const postUrl = typeof window !== 'undefined' ? window.location.href : `https://thetimesclock.com/post/${slug}`; // Fallback/Client-side
-const cleanExcerpt = post.excerpt ? post.excerpt.replace(/<[^>]*>/g, '').slice(0, 160) : "Read this amazing story on The Times Clock.";
 
 // --- AD INJECTION LOGIC ---
 const AD_SLOT_ID = "9786811867";
@@ -91,32 +96,15 @@ function injectAdsIntoContent(htmlContent) {
 const processedContent = injectAdsIntoContent(post.content);
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>{post.title} - The Times Clock</title>
-    <meta name="description" content={cleanExcerpt} />
-    <link rel="canonical" href={postUrl} />
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="article" />
-    <meta property="og:url" content={postUrl} />
-    <meta property="og:title" content={post.title} />
-    <meta property="og:description" content={cleanExcerpt} />
-    {featuredImgUrl && <meta property="og:image" content={featuredImgUrl} />}
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={postUrl} />
-    <meta property="twitter:title" content={post.title} />
-    <meta property="twitter:description" content={cleanExcerpt} />
-    {featuredImgUrl && <meta property="twitter:image" content={featuredImgUrl} />}
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
-    <ClientRouter />
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9250289969484573"
-     crossorigin="anonymous"></script>
+<Layout 
+  title={post.title} 
+  description={cleanDesc}
+  image={seoImage}
+  type="article" 
+  publishDate={post.date}
+  author={post.author?.node?.name}
+  canonical={`https://thetimesclock.com/post/${post.slug}`}
+>
     <style>
       html { scroll-behavior: smooth; }
       .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -125,10 +113,7 @@ const processedContent = injectAdsIntoContent(post.content);
       /* Active TOC highlight */
       .toc-active { color: #22c55e !important; border-left-color: #22c55e !important; }
     </style>
-  </head>
-  <body class="bg-white font-['Inter',sans-serif] antialiased text-gray-900">
-    <Navbar />
-    
+
     <main class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
       
       <!-- HERO SECTION -->
@@ -176,9 +161,6 @@ const processedContent = injectAdsIntoContent(post.content);
         <!-- LEFT SIDEBAR: TOC & Desktop Share -->
         <aside class="hidden lg:block lg:col-span-2">
             <div class="sticky top-32 flex flex-col gap-10">
-                <!-- Desktop Share Icons -->
-                <!-- Sidebar Content (TOC only now) -->
-
                 <!-- TOC -->
                 <div>
                      <p class="text-xs font-bold text-gray-900 uppercase tracking-wider mb-4 border-b border-gray-100 pb-2">Table of Contents</p>
@@ -282,11 +264,6 @@ const processedContent = injectAdsIntoContent(post.content);
 
     </main>
 
-    <!-- MOBILE SHARE BAR (Fixed Bottom) -->
-    <!-- Mobile Share Bar Removed -->
-
-    <Footer />
-
     <script define:vars={{ title: post.title }}>
         // SHARE FUNCTIONS
         window.share = (platform) => {
@@ -387,5 +364,4 @@ const processedContent = injectAdsIntoContent(post.content);
             }
         }
     </script>
-  </body>
-</html>
+</Layout>

@@ -192,7 +192,7 @@ export async function getPostBySlug(slug) {
   const query = `
     query GetPostBySlug($slug: ID!) {
       post(id: $slug, idType: SLUG) {
-        title content date slug
+        title content date modified excerpt slug
         featuredImage { node { sourceUrl altText } }
         author { node { name avatar { url } } }
         categories { nodes { name slug } }
@@ -206,7 +206,7 @@ export async function getPostBySlug(slug) {
     const queryUri = `
         query GetPostByUri($slug: ID!) {
           post(id: $slug, idType: URI) {
-            title content date slug
+            title content date modified excerpt slug
             featuredImage { node { sourceUrl altText } }
             author { node { name avatar { url } } }
             categories { nodes { name slug } }
@@ -231,7 +231,7 @@ export async function getPostBySlug(slug) {
       query GetPostBySearch($slug: String!) {
         posts(where: { name: $slug }, first: 1) {
           nodes {
-            title content date slug
+            title content date modified excerpt slug
             featuredImage { node { sourceUrl altText } }
             author { node { name avatar { url } } }
             categories { nodes { name slug } }
