@@ -4,7 +4,6 @@ import Hero from '../components/Hero.astro';
 import CategorySection from '../components/CategorySection.astro';
 import Layout from '../layouts/Layout.astro';
 import { ArrowRight } from 'lucide-react';
-import { Image } from 'astro:assets';
 
 // FIX: Fetch 4 posts for ALL categories now
 const { nodes: featuredPosts } = await getPostsByCategory('Featured', 5);
@@ -28,13 +27,7 @@ const { nodes: financeStories } = await getPostsByCategory('Finance', 4);
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 text-gray-500 text-sm font-semibold tracking-wide">
              <div class="flex -space-x-2">
                 {[1,2,3,4,5].map(i => (
-                  <Image 
-                    src={`https://i.pravatar.cc/100?img=${i+30}`} 
-                    width={32}
-                    height={32}
-                    class="w-8 h-8 rounded-full border-2 border-white ring-1 ring-gray-100" 
-                    alt="Member" 
-                   />
+                  <img src={`https://i.pravatar.cc/100?img=${i+30}`} class="w-8 h-8 rounded-full border-2 border-white ring-1 ring-gray-100" alt="Member" />
                 ))}
                  <div class="w-8 h-8 rounded-full bg-[#22c55e] border-2 border-white flex items-center justify-center text-[10px] text-white font-bold">
                     +5k

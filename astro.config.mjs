@@ -2,12 +2,11 @@ import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
-
 import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
   site: 'https://thetimesclock.com',
-  prefetch: true,
+  output: 'static', // 👈 THIS IS THE SECRET TO SPEED
 
   devToolbar: {
     enabled: false
@@ -20,10 +19,9 @@ export default defineConfig({
   ],
 
   adapter: cloudflare(),
+
+  // Let's keep images simple for now to stop the crashing
   image: {
-    domains: ['wp.thetimesclock.com', 'secure.gravatar.com', 'images.unsplash.com', 'i.pravatar.cc'],
-    service: {
-      entrypoint: 'astro/assets/services/sharp'
-    }
+    service: { entrypoint: 'astro/assets/services/noop' }
   }
 });

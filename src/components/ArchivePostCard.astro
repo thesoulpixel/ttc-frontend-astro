@@ -13,11 +13,10 @@ const authorAvatar = post.author?.node?.avatar?.url;
   <!-- Image Section (40%) -->
   <a href={`/post/${post.slug}`} class="w-full sm:w-2/5 shrink-0 block relative group overflow-hidden rounded-xl aspect-video sm:aspect-auto sm:h-auto bg-gray-100">
     {post.featuredImage?.node?.sourceUrl ? (
-        <Image 
+        <img 
         src={post.featuredImage?.node?.sourceUrl} 
         alt={post.title} 
-        width={800}
-        height={600}
+        loading="lazy"
         class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
         />
     ) : (
