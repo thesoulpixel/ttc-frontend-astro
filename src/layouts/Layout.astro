@@ -79,8 +79,8 @@ import Footer from '../components/Footer.astro';
     <!-- 4. GOOGLE SCHEMA (JSON-LD) -->
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
 
-    <!-- 5. ADSENSE -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9250289969484573" crossorigin="anonymous"></script>
+    <!-- 5. ADSENSE (Lazy Loaded) -->
+    <!-- Removed blocking script -->
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <ClientRouter />
@@ -89,5 +89,29 @@ import Footer from '../components/Footer.astro';
     <Navbar />
     <slot />
     <Footer />
+
+    <script is:inline>
+      // Lazy Load AdSense
+      function loadAdSense() {
+        const script = document.createElement('script');
+        script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9250289969484573";
+        script.async = true;
+        script.crossOrigin = "anonymous";
+        document.head.appendChild(script);
+        
+        // Remove listeners so it only loads once
+        window.removeEventListener('scroll', loadAdSense);
+        window.removeEventListener('mousemove', loadAdSense);
+        window.removeEventListener('touchstart', loadAdSense);
+      }
+    
+      // Load when user interacts (scrolls, moves mouse, touches)
+      // Small delay to ensure LCP is done
+      setTimeout(() => {
+        window.addEventListener('scroll', loadAdSense, { passive: true });
+        window.addEventListener('mousemove', loadAdSense, { passive: true });
+        window.addEventListener('touchstart', loadAdSense, { passive: true });
+      }, 1000);
+    </script>
   </body>
 </html>

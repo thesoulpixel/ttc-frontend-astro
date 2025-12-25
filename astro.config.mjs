@@ -20,4 +20,10 @@ export default defineConfig({
   ],
 
   adapter: cloudflare(),
+  image: {
+    domains: ['wp.thetimesclock.com', 'secure.gravatar.com', 'images.unsplash.com', 'i.pravatar.cc'],
+    service: {
+      entrypoint: 'astro/assets/services/sharp'
+    }
+  }
 });

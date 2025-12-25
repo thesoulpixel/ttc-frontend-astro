@@ -3,7 +3,7 @@ const API_URL = 'https://wp.thetimesclock.com/graphql';
 async function fetchAPI(query, variables = {}) {
   const headers = { 'Content-Type': 'application/json' };
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
   try {
     const res = await fetch(API_URL, {
@@ -20,28 +20,6 @@ async function fetchAPI(query, variables = {}) {
     // console.error("API Fetch Error:", error);
     return null;
   }
-}
-
-// --- 1. FALLBACK DATA (For when API fails completely) ---
-function getFallbackData(category, limit) {
-  const images = [
-    "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&q=80",
-    "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=80",
-    "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80"
-  ];
-
-  return Array(limit).fill(0).map((_, i) => ({
-    title: `${category} Success Story #${i + 1}`,
-    // Deterministic slug so links always match
-    slug: `mock-${category.toLowerCase().replace(/\s+/g, '-')}-${i}`,
-    date: new Date().toISOString(),
-    excerpt: "Learn the exact strategies used by top founders to grow their revenue...",
-    featuredImage: (i % 2 === 0) ? {
-      node: { sourceUrl: images[i % images.length], altText: "Business" }
-    } : null, // Test logo fallback
-    author: { node: { name: "The Times Clock", avatar: { url: "https://i.pravatar.cc/150" } } },
-    categories: { nodes: [{ name: category }] }
-  }));
 }
 
 // --- 2. GET POSTS (For Lists) ---
@@ -78,9 +56,13 @@ export async function getPostsByCategory(categoryName, limit = 10, after = null)
     };
   }
 
-  // Otherwise return fallback (Mocking pagination for fallback is tricky, just return simple list)
+  // If no data, return empty state. NO MOCK DATA.
+  if (after) {
+    throw new Error("Failed to load more posts via API.");
+  }
+
   return {
-    nodes: getFallbackData(categoryName, limit),
+    nodes: [],
     pageInfo: { hasNextPage: false, endCursor: null }
   };
 }
@@ -164,26 +146,9 @@ export async function getAllPostSlugs() {
     return true;
   });
 
-  // 4. Mock Slugs (converted to node format)
-  // These mocks need to be in the returned array to generate paths
-  let mocks = [];
-  categories.forEach(cat => {
-    for (let i = 0; i < 5; i++) {
-      const s = `mock-${cat.toLowerCase().replace(/\s+/g, '-')}-${i}`;
-      if (!seen.has(s)) {
-        mocks.push({ slug: s });
-        seen.add(s);
-      }
-    }
-  });
-
-  // Also include the hero fallback mock specifically
-  const heroMock = "mock-gravity-payments";
-  if (!seen.has(heroMock)) {
-    mocks.push({ slug: heroMock });
-  }
-
-  return [...uniqueSlugs, ...mocks];
+  // 4. Mock Slugs (REMOVED)
+  // return [...uniqueSlugs, ...mocks];
+  return uniqueSlugs;
 }
 
 // --- 4. GET SINGLE POST ---
@@ -244,18 +209,8 @@ export async function getPostBySlug(slug) {
     return dataSearch.posts.nodes[0];
   }
 
-  // B. Handle Mock Pages
-  if (slug.startsWith('mock-')) {
-    return {
-      title: "Sample Case Study Page",
-      date: new Date().toISOString(),
-      content: `<p>This is a generated page for the slug: <strong>${slug}</strong>.</p><p>It appears when the API cannot find the real article.</p>`,
-      slug: slug,
-      featuredImage: { node: { sourceUrl: "/logo.png", altText: "Logo" } },
-      author: { node: { name: "The Times Clock", avatar: { url: "https://i.pravatar.cc/150" } } },
-      categories: { nodes: [{ name: "Case Study" }] }
-    };
-  }
+  // B. Handle Mock Pages (REMOVED)
+  // if (slug.startsWith('mock-')) { ... }
 
   return null;
 }

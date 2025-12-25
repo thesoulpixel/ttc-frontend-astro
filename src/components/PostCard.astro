@@ -1,5 +1,6 @@
 ---
 import { CheckCircle2, User, ChevronRight } from 'lucide-react';
+import { Image } from 'astro:assets';
 
 const { post, categoryLabel } = Astro.props;
 if (!post) return null;
@@ -21,10 +22,11 @@ const formattedDate = date ? new Date(date).toLocaleDateString('en-US', { month:
     
     <div class="w-full sm:w-[160px] md:w-[200px] shrink-0">
       <div class="aspect-[4/3] sm:aspect-[3/4] sm:h-full rounded-xl overflow-hidden relative shadow-sm border border-gray-100">
-        <img 
+        <Image 
           src={imageUrl} 
           alt={title} 
-          loading="lazy"
+          width={800}
+          height={600}
           class={`w-full h-full ${imageUrl === '/logo.png' ? 'object-contain p-6 bg-gray-50 opacity-40' : 'object-cover'} transform group-hover:scale-105 transition-transform duration-700 ease-out`}
         />
         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors"></div>

@@ -90,7 +90,7 @@ const description = `Read the best ${category.name} case studies and business st
 
                 try {
                     // Use server-provided category name directly
-                    const url = `/api/posts.json?category=${encodeURIComponent(currentCategory)}&limit=4&after=${encodeURIComponent(endCursor)}`;
+                    const url = `/api/posts.json?category=${encodeURIComponent(currentCategory)}&limit=2&after=${encodeURIComponent(endCursor)}`;
                     console.log('Fetching:', url);
                     
                     const res = await fetch(url);

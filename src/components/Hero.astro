@@ -1,18 +1,16 @@
 ---
 import { TrendingUp, ChevronRight } from 'lucide-react';
+import { Image } from 'astro:assets';
 
 const { featuredPosts } = Astro.props;
 
-// Fallback data
-const fallbackPosts = [{
-  title: "How Gravity Payments CEO Dan Price Raised Minimum Wage to $70k",
-  featuredImage: { node: { sourceUrl: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1600&q=80" } },
-  slug: "mock-gravity-payments",
-  growthValue: "$70,000 M" 
-}];
+// Use fetched posts or empty
+const posts = (featuredPosts && featuredPosts.length > 0) ? featuredPosts : [];
 
-// Use fetched posts or fallback
-const posts = (featuredPosts && featuredPosts.length > 0) ? featuredPosts : fallbackPosts;
+if (posts.length === 0) {
+  return null; // Don't render Hero if no posts
+}
+
 // Helper to extract money string from title (Supports $, £, €, etc.)
 const extractMoney = (str) => {
   // Matches currency symbol followed by numbers and optional suffixes (k, m, b)
@@ -82,7 +80,14 @@ const activeGrowthValue = postsWithGrowth[0].extractedGrowth;
           <div class="flex -space-x-3">
             {[1,2,3,4].map(i => (
               <div class="w-10 h-10 rounded-full border-[3px] border-[#4F46E5] bg-gray-200 overflow-hidden relative z-10 ring-2 ring-white/10">
-                <img src={`https://i.pravatar.cc/100?img=${i+20}`} alt="User" class="w-full h-full object-cover" loading="lazy" />
+                <Image 
+                  src={`https://i.pravatar.cc/100?img=${i+20}`} 
+                  alt="User" 
+                  width={40}
+                  height={40}
+                  class="w-full h-full object-cover" 
+                  loading="eager"
+                />
               </div>
             ))}
           </div>
@@ -102,12 +107,14 @@ const activeGrowthValue = postsWithGrowth[0].extractedGrowth;
                     <div class={`absolute inset-0 w-full h-full transition-opacity duration-500 js-slide-item ${index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}>
                         <!-- Clipped Image Container -->
                         <div class="absolute inset-0 w-full h-full rounded-[1.8rem] overflow-hidden">
-                            <img 
+                            <Image 
                                 src={post.featuredImage?.node?.sourceUrl} 
                                 alt={post.title} 
+                                width={1600}
+                                height={1000}
+                                quality="max"
                                 class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-500"
                                 loading={index === 0 ? "eager" : "lazy"}
-                                fetchpriority={index === 0 ? "high" : "auto"}
                             />
                             
                             <!-- Overlay gradient -->
