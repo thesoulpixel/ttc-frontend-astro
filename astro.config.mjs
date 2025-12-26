@@ -4,6 +4,8 @@ import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import cloudflare from '@astrojs/cloudflare';
 
+import partytown from '@astrojs/partytown'; // <--- Check this is here
+
 export default defineConfig({
   site: 'https://thetimesclock.com',
   output: 'static', // 👈 THIS IS THE SECRET TO SPEED
@@ -13,6 +15,9 @@ export default defineConfig({
   },
 
   integrations: [
+    partytown({
+      config: { forward: ['dataLayer.push'] }, // Allow Google events
+    }),
     tailwind(),
     react(),
     sitemap()

@@ -1,1 +1,34 @@
-// Contents removed by Astro as it's used for prerendering only
+globalThis.process ??= {}; globalThis.process.env ??= {};
+/* empty css                                 */
+import { c as createAstro, a as createComponent, b as addAttribute, r as renderComponent, d as renderHead, e as renderTemplate } from '../chunks/astro/server_tYTg26cl.mjs';
+import { $ as $$ClientRouter, a as $$Navbar, b as $$Footer } from '../chunks/ClientRouter_DuDqnulP.mjs';
+export { r as renderers } from '../chunks/_@astro-renderers_Ddps2kkj.mjs';
+
+const $$Astro = createAstro("https://thetimesclock.com");
+const $$Privacy = createComponent(($$result, $$props, $$slots) => {
+  const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
+  Astro2.self = $$Privacy;
+  return renderTemplate`<html lang="en"> <head><meta charset="UTF-8"><meta name="description" content="Privacy Policy - The Times Clock"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator"${addAttribute(Astro2.generator, "content")}><title>Privacy Policy - The Times Clock</title>${renderComponent($$result, "ClientRouter", $$ClientRouter, {})}<meta name="description" content="Privacy Policy for The Times Clock. Learn how we collect, use, and protect your data."><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url"${addAttribute(Astro2.url, "content")}><meta property="og:title" content="Privacy Policy - The Times Clock"><meta property="og:description" content="Privacy Policy for The Times Clock. Learn how we collect, use, and protect your data."><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">${renderHead()}</head> <body class="bg-white font-['Inter',sans-serif] antialiased text-gray-900"> ${renderComponent($$result, "Navbar", $$Navbar, {})} <main class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24"> <div class="max-w-3xl mx-auto"> <!-- Header --> <p class="text-[#ff3b30] font-bold text-xs uppercase tracking-[0.2em] mb-8">Legal</p> <!-- Main Title --> <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 uppercase tracking-tighter leading-[0.95] mb-4">
+Privacy Policy
+</h1> <p class="text-gray-400 italic mb-16">Last updated: May 20, 2024</p> <!-- Content --> <div class="space-y-12"> <!-- Section 1 --> <section> <h2 class="text-2xl font-bold text-gray-900 uppercase tracking-tight mb-6">1. Introduction</h2> <p class="text-gray-500 leading-relaxed text-lg">
+Welcome to The Times Clock. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our website.
+</p> </section> <!-- Section 2 --> <section> <h2 class="text-2xl font-bold text-gray-900 uppercase tracking-tight mb-6">2. The Data We Collect</h2> <p class="text-gray-500 leading-relaxed text-lg mb-6">
+We may collect, use, store and transfer different kinds of personal data about you which we have grouped together as follows:
+</p> <ul class="list-disc pl-5 space-y-3 text-gray-500 leading-relaxed text-lg ml-2"> <li><strong class="text-gray-900">Identity Data:</strong> includes first name, last name, username or similar identifier.</li> <li><strong class="text-gray-900">Contact Data:</strong> includes email address and telephone numbers.</li> <li><strong class="text-gray-900">Technical Data:</strong> includes internet protocol (IP) address, your login data, browser type and version.</li> </ul> </section> <!-- Section 3 --> <section> <h2 class="text-2xl font-bold text-gray-900 uppercase tracking-tight mb-6">3. How We Use Your Data</h2> <p class="text-gray-500 leading-relaxed text-lg mb-6">
+We will only use your personal data when the law allows us to. Most commonly, we will use your personal data in the following circumstances:
+</p> <ul class="list-disc pl-5 space-y-3 text-gray-500 leading-relaxed text-lg ml-2"> <li>To register you as a new subscriber.</li> <li>To deliver relevant content and advertisements to you.</li> <li>To use data analytics to improve our website and services.</li> </ul> </section> </div> </div> </main> ${renderComponent($$result, "Footer", $$Footer, {})} </body></html>`;
+}, "C:/Users/richa/Downloads/APP INVENTOR/thetimes clock/TTC ASTRO THEME - Antigravity/src/pages/privacy.astro", void 0);
+
+const $$file = "C:/Users/richa/Downloads/APP INVENTOR/thetimes clock/TTC ASTRO THEME - Antigravity/src/pages/privacy.astro";
+const $$url = "/privacy";
+
+const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: $$Privacy,
+  file: $$file,
+  url: $$url
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const page = () => _page;
+
+export { page };
