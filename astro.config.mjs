@@ -10,7 +10,7 @@ import keystatic from '@keystatic/astro';
 
 export default defineConfig({
   site: 'https://thetimesclock.com',
-  output: 'hybrid', // 👈 THIS IS THE SECRET TO SPEED
+  output: 'static', // 👈 THIS IS THE SECRET TO SPEED
 
   devToolbar: {
     enabled: false
