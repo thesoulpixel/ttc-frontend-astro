@@ -2,13 +2,11 @@
 import { config, fields, collection } from '@keystatic/core';
 
 export default config({
-    storage: {
-        kind: 'github',
-        repo: {
-            owner: 'thesoulpixel',
-            name: 'ttc-frontend-astro',
-        },
-    },
+     storage: {
+    kind: 'github',
+    // 👇 Your Repo Name (Double check this matches your GitHub exactly)
+    repo: 'thesoulpixel/ttc-frontend-astro', 
+  },
     collections: {
         posts: collection({
             label: 'New Stories',
