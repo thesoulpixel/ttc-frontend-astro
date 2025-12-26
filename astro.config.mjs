@@ -6,22 +6,19 @@ import cloudflare from '@astrojs/cloudflare';
 
 import partytown from '@astrojs/partytown'; // <--- Check this is here
 
+import keystatic from '@keystatic/astro';
+
 export default defineConfig({
   site: 'https://thetimesclock.com',
-  output: 'static', // 👈 THIS IS THE SECRET TO SPEED
+  output: 'hybrid', // 👈 THIS IS THE SECRET TO SPEED
 
   devToolbar: {
     enabled: false
   },
 
-  integrations: [
-    partytown({
-      config: { forward: ['dataLayer.push'] }, // Allow Google events
-    }),
-    tailwind(),
-    react(),
-    sitemap()
-  ],
+  integrations: [partytown({
+    config: { forward: ['dataLayer.push'] }, // Allow Google events
+  }), tailwind(), react(), sitemap(), keystatic()],
 
   adapter: cloudflare(),
 
