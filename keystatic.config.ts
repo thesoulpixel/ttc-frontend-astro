@@ -46,8 +46,8 @@ export default config({
                         label: 'Meta Description',
                         multiline: true,
                     }),
-                    canonical: fields.text(),
-                    noindex: fields.checkbox({ defaultValue: false }),
+                    canonical: fields.text({ label: 'Canonical URL' }),
+                    noindex: fields.checkbox({ label: 'No Index', defaultValue: false }),
                 }),
 
                 content: fields.document({
