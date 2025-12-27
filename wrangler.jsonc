@@ -1,6 +1,6 @@
 {
 	"main": "dist/_worker.js/index.js",
-	"name": "the-times-clock",
+	"name": "ttc-frontend-astro",
   "compatibility_date": "2025-12-24",
   "compatibility_flags": [
     "nodejs_compat",
