@@ -1,5 +1,5 @@
 globalThis.process ??= {}; globalThis.process.env ??= {};
-/* empty css                                    */
+/* empty css                                                   */
 import { c as createAstro, a as createComponent, e as renderTemplate, b as addAttribute, m as maybeRenderHead, r as renderComponent, g as defineScriptVars, u as unescapeHTML } from '../../chunks/astro/server_tYTg26cl.mjs';
 import { a as getPostBySlug, g as getPostsByCategory } from '../../chunks/api_vcYZWY_0.mjs';
 import { $ as $$Layout } from '../../chunks/Layout_Bmr1Xpry.mjs';

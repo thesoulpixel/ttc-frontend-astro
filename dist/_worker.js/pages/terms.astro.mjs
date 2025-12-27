@@ -1,5 +1,5 @@
 globalThis.process ??= {}; globalThis.process.env ??= {};
-/* empty css                                 */
+/* empty css                                                */
 import { c as createAstro, a as createComponent, b as addAttribute, r as renderComponent, d as renderHead, e as renderTemplate } from '../chunks/astro/server_tYTg26cl.mjs';
 import { $ as $$ClientRouter, a as $$Navbar, b as $$Footer } from '../chunks/ClientRouter_DuDqnulP.mjs';
 export { r as renderers } from '../chunks/_@astro-renderers_Ddps2kkj.mjs';

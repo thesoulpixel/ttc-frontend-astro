@@ -1,5 +1,5 @@
 globalThis.process ??= {}; globalThis.process.env ??= {};
-/* empty css                                 */
+/* empty css                                                */
 import { a as createComponent, r as renderComponent, f as renderScript, e as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_tYTg26cl.mjs';
 import { $ as $$Layout } from '../chunks/Layout_Bmr1Xpry.mjs';
 import { c as createLucideIcon } from '../chunks/ClientRouter_DuDqnulP.mjs';
